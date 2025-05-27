@@ -1,0 +1,149 @@
+@font-face {
+  font-family: "Silkscreen";
+  src: url("/fonts/Silkscreen-Regular.ttf") format("woff2"),
+    url("/fonts/Silkscreen-Regular.ttf") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Silkscreen";
+  src: url("/fonts/Silkscreen-Bold.ttf") format("woff2"),
+    url("/fonts/Silkscreen-Bold.ttf") format("woff");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kanit";
+  src: url("/fonts/Kanit-Regular.ttf") format("woff2"),
+    url("/fonts/Kanit-Regular.ttf") format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kanit";
+  src: url("/fonts/Kanit-Bold.ttf") format("woff2"),
+    url("/fonts/Kanit-Bold.ttf") format("woff");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.main-font {
+  font-family: "Kanit", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+* {
+  font-family: "Kanit", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.hero-font {
+  font-family: "Silkscreen", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.primary-btn {
+  @apply bg-secondary md:py-2 md:px-8 px-4 py-2 items-center flex text-sm md:text-base rounded-full text-white hover:bg-primary transition duration-150;
+}
+
+.secondary-btn {
+  @apply bg-black/10 backdrop-blur-md md:py-2 md:px-8 px-4 py-2 items-center flex text-sm md:text-base rounded-full text-secondary hover:bg-primary hover:text-white transition duration-150;
+}
+
+.input {
+  @apply border p-2 border-slate-300 rounded;
+}
+
+.gradient-btn {
+  @apply bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded py-2 px-2 md:px-5;
+}
+
+/* Modal styles */
+.modal {
+  @apply fixed inset-0 flex justify-center items-center z-50;
+  font-family: "Kanit", sans-serif;
+}
+
+.modal-backdrop {
+  @apply absolute inset-0 bg-black/50 z-40;
+}
+
+.modal-content {
+  @apply relative z-50 bg-white p-6 rounded-lg text-center shadow-lg;
+}
+.deco {
+  opacity: 0.5;
+  background-image: linear-gradient(rgb(167, 0, 0) 1px, transparent 1px),
+    linear-gradient(to right, rgb(167, 0, 0) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+.info-deco {
+  opacity: 1;
+  --s: 330px;
+  --_g: radial-gradient(rgb(255, 255, 255) 45%, #0000 46%);
+  --_l: radial-gradient(rgb(167, 0, 0) 15%, #0000 16%);
+  background: var(--_l), var(--_l), var(--_g), var(--_g);
+  background-position: 0 0, var(--s) var(--s);
+  background-size: calc(2 * var(--s)) calc(2 * var(--s));
+  animation: x 2s cubic-bezier(0.5, 92, 0.5, -92) infinite,
+    y 2s cubic-bezier(0.5, 92, 0.5, -92) infinite -0.5s;
+}
+
+@keyframes x {
+  to {
+    background-position-x: 1px, calc(var(--s) - 1px), 0, var(--s);
+  }
+}
+@keyframes y {
+  to {
+    background-position-y: 1px, calc(var(--s) - 1px), 0, var(--s);
+  }
+}
+
+/* Scrollbar for WebKit-based browsers */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+  height: 10px; /* Height of the scrollbar (for horizontal scrollbars) */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background color of the scrollbar track */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar handle */
+  border-radius: 10px; /* Rounded corners for the handle */
+  border: 2px solid #f1f1f1; /* Adds padding around the handle */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Darker handle on hover */
+}
+
+/* File: index.css */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb, #A70000);
+  border-radius: 10px;
+}
+
+

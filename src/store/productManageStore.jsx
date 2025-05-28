@@ -13,7 +13,7 @@ const useProductManageStore = create(
       filteredProducts: () => {
         const { products, filter } = get();
         if (filter === "all") return products;
-        return products.filter((product) => product.category.name === filter);
+        return products.filter((product) => product?.category?.name === filter);
       },
     }),
     {

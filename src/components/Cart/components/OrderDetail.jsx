@@ -1,16 +1,16 @@
 /* eslint-disable react/prop-types */
-import { Typography, Divider } from "antd";
+import { Divider } from "antd";
 import { useManageStore } from "../../../store/useManageStore";
-
-const { Text } = Typography;
 
 const OrderDetail = ({ note }) => {
   const { items } = useManageStore();
 
-  const total = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  // Total with discounted prices
+  const total = items.reduce((acc, item) => {
+    const discount = item.discountPrice || 0;
+    const sellingPrice = item.price - discount;
+    return acc + sellingPrice * item.quantity;
+  }, 0);
 
   return (
     <div className="space-y-3">
@@ -18,19 +18,25 @@ const OrderDetail = ({ note }) => {
       <Divider className="my-2" />
 
       <div className="space-y-2">
-        {items.map((item) => (
-          <div
-            key={item._id}
-            className="flex justify-between items-center text-sm text-gray-700"
-          >
-            <span>
-              {item.name} × {item.quantity}
-            </span>
-            <span className="font-medium">
-              Ks {(item.price * item.quantity).toLocaleString()}
-            </span>
-          </div>
-        ))}
+        {items.map((item) => {
+          const discount = item.discountPrice || 0;
+          const sellingPrice = item.price - discount;
+          const itemTotal = sellingPrice * item.quantity;
+
+          return (
+            <div
+              key={item._id}
+              className="flex justify-between items-center text-sm text-gray-700"
+            >
+              <span>
+                {item.name} × {item.quantity}
+              </span>
+              <span className="font-medium">
+                Ks {itemTotal.toLocaleString()}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
       <Divider className="my-3" />

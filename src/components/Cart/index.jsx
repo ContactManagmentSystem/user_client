@@ -9,6 +9,7 @@ import {
   LineSegment,
 } from "phosphor-react";
 import ConfirmModal from "./components/ConfirmModal";
+import { Trash } from "phosphor-react";
 
 const formatPrice = (num) => new Intl.NumberFormat("en-US").format(num);
 
@@ -63,51 +64,56 @@ const Cart = ({ landing }) => {
         <>
           {/* Item List */}
           <div className="space-y-4">
-            {items.map((item) => (
-              <div
-                key={item._id}
-                className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg shadow-md bg-white hover:shadow-lg transition"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-800">
-                      {item.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      {item.price} Ks x {item.quantity} ={" "}
-                      <span className="font-medium text-gray-800">
-                        {formatPrice(item.price * item.quantity)} Ks
+            {items.map((item) => {
+              const discount = item.discountPrice || 0;
+              const sellingPrice = item.price - discount;
+              const itemTotal = sellingPrice * item.quantity;
+
+              return (
+                <div
+                  key={item._id}
+                  className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between p-4 border rounded-lg shadow-md bg-white hover:shadow-lg transition"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg text-gray-800">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {sellingPrice} Ks x {item.quantity} ={" "}
+                        <span className="font-medium text-gray-800">
+                          {formatPrice(itemTotal)} Ks
+                        </span>
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => decreaseQuantity(item._id)}
+                        className="w-8 h-8 text-lg bg-gray-200 rounded hover:bg-gray-300"
+                      >
+                        -
+                      </button>
+                      <span className="min-w-[30px] text-center font-medium">
+                        {item.quantity}
                       </span>
-                    </p>
+                      <button
+                        onClick={() => increaseQuantity(item._id)}
+                        className="w-8 h-8 text-lg bg-gray-200 rounded hover:bg-gray-300"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => decreaseQuantity(item._id)}
-                      className="w-8 h-8 text-lg bg-gray-200 rounded hover:bg-gray-300"
-                    >
-                      -
-                    </button>
-                    <span className="min-w-[30px] text-center font-medium">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => increaseQuantity(item._id)}
-                      className="w-8 h-8 text-lg bg-gray-200 rounded hover:bg-gray-300"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-                <div className="mt-2 sm:mt-0">
                   <button
                     onClick={() => removeItem(item._id)}
-                    className="text-red-600 hover:underline text-sm"
+                    className="text-red-600 hover:text-red-800 transition"
+                    aria-label="Remove item"
                   >
-                    Remove
+                    <Trash size={20} weight="bold" />
                   </button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Total Summary */}

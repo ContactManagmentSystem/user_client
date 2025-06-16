@@ -1,33 +1,36 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
-import { Input } from "antd";
+import { useEffect } from "react";
 import { useGetProduct } from "../../../api/hooks/useQuery";
+import { useGetCate } from "../../../api/hooks/useCate";
 import useProductManageStore from "../../../store/productManageStore";
 import Loading from "../../ui/Loading";
 import ProductCard from "../../ui/ProductCard";
-import { motion } from "framer-motion";
 import NotFound from "../../ui/NotFound";
-import { useGetCate } from "../../../api/hooks/useCate";
+import { motion } from "framer-motion";
 
 const ShowCase = ({ landing }) => {
   const { data: category } = useGetCate(1, 10);
-  const { setProducts, filteredProducts, filter, setFilter } =
-    useProductManageStore((state) => ({
-      setProducts: state.setProducts,
-      filteredProducts: state.filteredProducts,
-      filter: state.filter,
-      setFilter: state.setFilter,
-    }));
-
-  const [searchInput, setSearchInput] = useState("");
-  const [activeSearch, setActiveSearch] = useState("");
+  const {
+    setProducts,
+    filteredProducts,
+    filter,
+    setFilter,
+    searchInput,
+  } = useProductManageStore((state) => ({
+    setProducts: state.setProducts,
+    filteredProducts: state.filteredProducts,
+    filter: state.filter,
+    setFilter: state.setFilter,
+    searchInput: state.searchInput,
+    setSearchInput: state.setSearchInput,
+  }));
 
   const {
     data: products,
     error,
     isLoading,
     refetch,
-  } = useGetProduct(1, 50, "all", activeSearch, filter === "all" ? "" : filter);
+  } = useGetProduct(1, 50, "all", searchInput, filter === "all" ? "" : filter);
 
   useEffect(() => {
     if (products?.data) {
@@ -35,22 +38,9 @@ const ShowCase = ({ landing }) => {
     }
   }, [products, setProducts]);
 
-  const handleSearch = (value) => {
-    const trimmed = value.trim();
-    setActiveSearch(trimmed);
-    setSearchInput(trimmed);
+  useEffect(() => {
     refetch();
-  };
-
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setSearchInput(value);
-
-    if (value.trim() === "") {
-      setActiveSearch("");
-      refetch();
-    }
-  };
+  }, [searchInput, filter]);
 
   const primaryColor = landing?.colourCode || "#A70000";
 
@@ -62,7 +52,6 @@ const ShowCase = ({ landing }) => {
         style={{ "--scrollbar-thumb": primaryColor }}
       >
         <div className="flex gap-4 overflow-x-auto custom-scrollbar">
-          {/* All Category */}
           <motion.div
             onClick={() => setFilter("all")}
             whileHover={{ scale: 1.03 }}
@@ -83,7 +72,6 @@ const ShowCase = ({ landing }) => {
             </div>
           </motion.div>
 
-          {/* Dynamic Categories */}
           {category?.data?.map((el) => {
             const isActive = filter === el.name;
             return (
@@ -115,39 +103,6 @@ const ShowCase = ({ landing }) => {
             );
           })}
         </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="flex mb-5 rounded-2xl overflow-hidden shadow-md transition-all border border-gray-300 focus-within:shadow-lg bg-white">
-        <Input
-          value={searchInput}
-          onChange={handleChange}
-          onPressEnter={(e) => handleSearch(e.target.value)}
-          placeholder="Search products by name..."
-          className="!border-0 !shadow-none focus:!ring-0 focus:!outline-none"
-          style={{
-            flex: 1,
-            height: 50,
-            padding: "0 16px",
-            fontSize: 16,
-            backgroundColor: "transparent",
-          }}
-        />
-        <button
-          onClick={() => handleSearch(searchInput)}
-          className="px-6 text-sm font-semibold transition-all"
-          style={{
-            backgroundColor: primaryColor,
-            color: "#fff",
-            height: 50,
-            border: "none",
-            fontSize: 16,
-            fontWeight: 500,
-            borderLeft: `1px solid ${primaryColor}`,
-          }}
-        >
-          Search
-        </button>
       </div>
 
       {/* Product Grid */}

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useManageStore } from "../../store/useManageStore";
+import useAlertStore from "../../store/alertStore";
 
 const slideVariants = {
   enter: (direction) => ({
@@ -33,6 +34,7 @@ const ProductCard = ({ landing, product }) => {
     items: state.items,
   }));
 
+  const showAlert = useAlertStore((state) => state.showAlert);
   const isInCart = items.some((item) => item._id === product._id);
 
   function getRandomDelay() {
@@ -66,7 +68,12 @@ const ProductCard = ({ landing, product }) => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    isInCart ? removeItem(product._id) : addItem(product);
+    if (isInCart) {
+      removeItem(product._id);
+    } else {
+      addItem(product);
+      showAlert(`${product.name} added to cart`); // ✅ show alert
+    }
   };
 
   return (
@@ -98,7 +105,6 @@ const ProductCard = ({ landing, product }) => {
           />
         </AnimatePresence>
 
-        {/* Image Index Navigator */}
         {product.images?.length > 1 && (
           <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-md shadow-md backdrop-blur-sm">
             {index + 1} / {product.images.length}
@@ -106,7 +112,6 @@ const ProductCard = ({ landing, product }) => {
         )}
       </div>
 
-      {/* Description Section */}
       <div className="flex flex-col justify-between w-full h-[200px] bg-white/20 backdrop-blur-sm text-gray-800 border shadow-md px-3 py-2">
         <div className="flex justify-between items-start lg:flex-row flex-col gap-2">
           <span className="text-xl border-b-2">{product.name}</span>

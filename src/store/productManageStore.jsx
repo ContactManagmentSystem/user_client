@@ -7,13 +7,27 @@ const useProductManageStore = create(
     (set, get) => ({
       products: [],
       filter: "all",
+      searchInput: "",
+
       setProducts: (products) => set({ products }),
       setFilter: (filter) => set({ filter }),
+      setSearchInput: (searchInput) => set({ searchInput }),
 
       filteredProducts: () => {
-        const { products, filter } = get();
-        if (filter === "all") return products;
-        return products.filter((product) => product?.category?.name === filter);
+        const { products, filter, searchInput } = get();
+
+        return products.filter((product) => {
+          const matchesCategory =
+            filter === "all" || product?.category?.name === filter;
+
+          const matchesSearch =
+            searchInput.trim() === "" ||
+            product?.name
+              ?.toLowerCase()
+              .includes(searchInput.trim().toLowerCase());
+
+          return matchesCategory && matchesSearch;
+        });
       },
     }),
     {

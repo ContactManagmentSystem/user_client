@@ -28,7 +28,7 @@ const NavBar = ({ padding = "" }) => {
     setFilter("all");
   };
 
-  // Reset to all when input becomes empty
+  // Reset filter when input is cleared
   useEffect(() => {
     const trimmed = localSearchInput.trim();
     if (trimmed === "") {
@@ -37,7 +37,20 @@ const NavBar = ({ padding = "" }) => {
     }
   }, [localSearchInput, setSearchInput, setFilter]);
 
-  // Track previous cartCount to animate only when increased
+  // Debounce: auto-set search input after 3 seconds of no typing
+  useEffect(() => {
+    const trimmed = localSearchInput.trim();
+    if (!trimmed) return;
+
+    const timeout = setTimeout(() => {
+      setSearchInput(trimmed);
+      setFilter("all");
+    }, 1500);
+
+    return () => clearTimeout(timeout);
+  }, [localSearchInput, setSearchInput, setFilter]);
+
+  // Animate cart icon if count increases
   const prevCartCount = useRef(cartCount);
   const isCartIncreased = cartCount > prevCartCount.current;
 
@@ -49,7 +62,7 @@ const NavBar = ({ padding = "" }) => {
     <div
       className={`w-full sticky top-0 z-50 bg-white p-4 flex justify-between items-center shadow-md ${padding}`}
     >
-      {/* Left: Logo */}
+      {/* Logo */}
       <div className="flex items-center gap-3">
         <Link to="/" className="flex items-center gap-2">
           <img
@@ -60,7 +73,7 @@ const NavBar = ({ padding = "" }) => {
         </Link>
       </div>
 
-      {/* Center/Right: Search Bar or Icons */}
+      {/* Search or Icons */}
       <div className="flex-1 flex justify-end">
         <AnimatePresence mode="wait">
           {showSearch ? (

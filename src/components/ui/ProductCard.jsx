@@ -27,7 +27,7 @@ const ProductCard = ({ landing, product }) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [delayMs, setDelayMs] = useState(getRandomDelay());
-
+console.log(landing)
   const { addItem, removeItem, items } = useManageStore((state) => ({
     addItem: state.addItem,
     removeItem: state.removeItem,
@@ -118,11 +118,11 @@ const ProductCard = ({ landing, product }) => {
           <div className="flex flex-col text-start">
             {product.discountPrice > 0 && (
               <span className="text-sm line-through decoration-2 decoration-red-500">
-                {product.price} Kyats
+                {product.price} {landing?.currency}
               </span>
             )}
             <span className="text-md lg:text-base font-semibold">
-              {finalPrice} Kyats
+              {finalPrice} {landing?.currency}
             </span>
           </div>
         </div>

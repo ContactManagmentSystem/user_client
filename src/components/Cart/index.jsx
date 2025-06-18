@@ -54,7 +54,7 @@ const Cart = ({ landing }) => {
       const sellingPrice = item.discountPrice || item.price;
       return `${index + 1}. ${item.name} — Qty: ${
         item.quantity
-      } x ${sellingPrice} Ks = ${sellingPrice * item.quantity} Ks`;
+      } x ${sellingPrice} ${landing?.currency} = ${sellingPrice * item.quantity} ${landing?.currency}`;
     });
 
     const total = items.reduce((acc, item) => {
@@ -62,7 +62,7 @@ const Cart = ({ landing }) => {
       return acc + item.quantity * sellingPrice;
     }, 0);
 
-    lines.push(`\nTotal: ${formatPrice(total)} Ks`);
+    lines.push(`\nTotal: ${formatPrice(total)} {landing?.currency}`);
     return `Hello Admin,\nI would like to order:\n\n${lines.join("\n")}`;
   };
 
@@ -103,9 +103,9 @@ const Cart = ({ landing }) => {
                         {item.name}
                       </h3>
                       <p className="text-sm text-gray-500 mt-1">
-                        {sellingPrice} Ks x {item.quantity} ={" "}
+                        {sellingPrice} {landing?.currency} x {item.quantity} ={" "}
                         <span className="font-medium text-gray-800">
-                          {formatPrice(itemTotal)} Ks
+                          {formatPrice(itemTotal)} {landing?.currency}
                         </span>
                       </p>
                     </div>
@@ -142,7 +142,7 @@ const Cart = ({ landing }) => {
           {/* Total Summary */}
           <div className="flex justify-end items-center border-t pt-4">
             <span className="text-lg font-semibold text-gray-800">
-              Total: {formatPrice(totalAmount)} Ks
+              Total: {formatPrice(totalAmount)} {landing?.currency}
             </span>
           </div>
 

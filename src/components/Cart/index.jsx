@@ -7,11 +7,33 @@ import {
   EnvelopeSimple,
   ChatCircleDots,
   LineSegment,
+  PhoneCall,
+  FacebookLogo,
+  InstagramLogo,
+  TwitterLogo,
+  Globe,
+  Trash,
 } from "phosphor-react";
 import ConfirmModal from "./components/ConfirmModal";
-import { Trash } from "phosphor-react";
+import { redirectToContact } from "../../lib/contact";
 
 const formatPrice = (num) => new Intl.NumberFormat("en-US").format(num);
+
+// Define all supported icons
+const collectedIcons = [
+  { key: "whatsapp", icon: <WhatsappLogo size={20} weight="fill" /> },
+  { key: "telegram", icon: <TelegramLogo size={20} weight="fill" /> },
+  { key: "email", icon: <EnvelopeSimple size={20} weight="fill" /> },
+  { key: "mail", icon: <EnvelopeSimple size={20} weight="fill" /> },
+  { key: "viber", icon: <ChatCircleDots size={20} weight="fill" /> },
+  { key: "line", icon: <LineSegment size={20} weight="fill" /> },
+  { key: "phone", icon: <PhoneCall size={20} weight="fill" /> },
+  { key: "call", icon: <PhoneCall size={20} weight="fill" /> },
+  { key: "facebook", icon: <FacebookLogo size={20} weight="fill" /> },
+  { key: "instagram", icon: <InstagramLogo size={20} weight="fill" /> },
+  { key: "twitter", icon: <TwitterLogo size={20} weight="fill" /> },
+  { key: "website", icon: <Globe size={20} weight="fill" /> },
+];
 
 const Cart = ({ landing }) => {
   const { items, increaseQuantity, decreaseQuantity, removeItem } =
@@ -21,33 +43,35 @@ const Cart = ({ landing }) => {
       decreaseQuantity: state.decreaseQuantity,
       removeItem: state.removeItem,
     }));
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const primaryColor = landing?.colourCode || "#3b82f6";
 
   const getCartSummaryMessage = () => {
     if (!items.length) return "My cart is empty.";
 
-    const lines = items.map(
-      (item, index) =>
-        `${index + 1}. ${item.name} — Qty: ${item.quantity} x ${
-          item.price
-        } Ks = ${item.price * item.quantity} Ks`
-    );
+    const lines = items.map((item, index) => {
+      const sellingPrice = item.discountPrice || item.price;
+      return `${index + 1}. ${item.name} — Qty: ${
+        item.quantity
+      } x ${sellingPrice} Ks = ${sellingPrice * item.quantity} Ks`;
+    });
 
-    const total = items.reduce(
-      (acc, item) => acc + item.quantity * item.price,
-      0
-    );
+    const total = items.reduce((acc, item) => {
+      const sellingPrice = item.discountPrice || item.price;
+      return acc + item.quantity * sellingPrice;
+    }, 0);
 
-    lines.push(`\nTotal: ${total} Ks`);
+    lines.push(`\nTotal: ${formatPrice(total)} Ks`);
     return `Hello Admin,\nI would like to order:\n\n${lines.join("\n")}`;
   };
 
   const encodedMsg = encodeURIComponent(getCartSummaryMessage());
-  const totalAmount = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+
+  const totalAmount = items.reduce((sum, item) => {
+    const sellingPrice = item.discountPrice || item.price;
+    return sum + item.quantity * sellingPrice;
+  }, 0);
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
@@ -65,8 +89,7 @@ const Cart = ({ landing }) => {
           {/* Item List */}
           <div className="space-y-4">
             {items.map((item) => {
-              const discount = item.discountPrice || 0;
-              const sellingPrice = item.price - discount;
+              const sellingPrice = item.discountPrice || item.price;
               const itemTotal = sellingPrice * item.quantity;
 
               return (
@@ -123,7 +146,7 @@ const Cart = ({ landing }) => {
             </span>
           </div>
 
-          {/* Order Now Button (Outline style + dynamic color) */}
+          {/* Order Now Button */}
           <div className="pt-4">
             <button
               onClick={() => setIsModalOpen(true)}
@@ -145,63 +168,53 @@ const Cart = ({ landing }) => {
             </button>
           </div>
 
-          {/* Contact Options (using dynamic color) */}
-          <div className="mt-10">
-            <h2 className="text-lg font-semibold text-gray-700 mb-3">
-              Or Contact Us Directly
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
-              {[
-                {
-                  icon: <WhatsappLogo size={20} weight="fill" />,
-                  label: "WhatsApp",
-                  href: `https://wa.me/959123456789?text=${encodedMsg}`,
-                },
-                {
-                  icon: <TelegramLogo size={20} weight="fill" />,
-                  label: "Telegram",
-                  href: `https://t.me/your_telegram_username?text=${encodedMsg}`,
-                },
-                {
-                  icon: <EnvelopeSimple size={20} weight="fill" />,
-                  label: "Email",
-                  href: `mailto:admin@example.com?subject=Order Request&body=${encodedMsg}`,
-                },
-                {
-                  icon: <ChatCircleDots size={20} weight="fill" />,
-                  label: "Viber",
-                  href: `viber://forward?text=${encodedMsg}`,
-                },
-                {
-                  icon: <LineSegment size={20} weight="fill" />,
-                  label: "LINE",
-                  href: `https://line.me/R/msg/text/?${encodedMsg}`,
-                },
-              ].map(({ icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 border-2 px-4 py-2 rounded-lg shadow transition"
-                  style={{
-                    color: primaryColor,
-                    borderColor: primaryColor,
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = primaryColor;
-                    e.currentTarget.style.color = "#fff";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = primaryColor;
-                  }}
-                >
-                  {icon} {label}
-                </a>
-              ))}
+          {/* Dynamic Contact Options */}
+          {landing?.socialLinks?.length > 0 && (
+            <div className="mt-10">
+              <h2 className="text-lg font-semibold text-gray-700 mb-3">
+                Or Contact Us Directly
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+                {landing.socialLinks.map((el) => {
+                  const match = collectedIcons.find((entry) =>
+                    el.icon?.toLowerCase().includes(entry.key)
+                  );
+                  if (!match) return null;
+
+                  let contactLink = el.link;
+                  if (
+                    contactLink.startsWith("http") &&
+                    !contactLink.startsWith("mailto") &&
+                    !contactLink.startsWith("tel")
+                  ) {
+                    contactLink += `?text=${encodedMsg}`;
+                  }
+
+                  return (
+                    <button
+                      key={el.name}
+                      onClick={() => redirectToContact(contactLink)}
+                      className="flex items-center justify-center gap-2 border-2 px-4 py-2 rounded-lg shadow transition"
+                      style={{
+                        color: primaryColor,
+                        borderColor: primaryColor,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = primaryColor;
+                        e.currentTarget.style.color = "#fff";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = primaryColor;
+                      }}
+                    >
+                      {match.icon} {el.name}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
 

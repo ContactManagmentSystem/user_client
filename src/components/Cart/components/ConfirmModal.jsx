@@ -21,7 +21,7 @@ import OrderDetail from "./OrderDetail";
 const { Option } = AntSelect;
 const { Title } = Typography;
 
-const ConfirmModal = ({ message: note, onClose, acceptPaymentTypes = [] }) => {
+const ConfirmModal = ({ landing, message: note, onClose, acceptPaymentTypes = [] }) => {
   const [form] = Form.useForm();
   const createOrder = useCreateOrder();
   const { data: payments = [] } = useGetPaymentType();
@@ -174,7 +174,7 @@ const ConfirmModal = ({ message: note, onClose, acceptPaymentTypes = [] }) => {
           </Title>
         </div>
         <div className="px-6 py-4 overflow-y-auto space-y-6">
-          <OrderDetail note={note} />
+          <OrderDetail landing={landing} note={note} />
           <Divider />
           <Form
             form={form}

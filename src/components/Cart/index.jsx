@@ -62,7 +62,7 @@ const Cart = ({ landing }) => {
       return acc + item.quantity * sellingPrice;
     }, 0);
 
-    lines.push(`\nTotal: ${formatPrice(total)} {landing?.currency}`);
+    lines.push(`\nTotal: ${formatPrice(total)} ${landing?.currency}`);
     return `Hello Admin,\nI would like to order:\n\n${lines.join("\n")}`;
   };
 
@@ -224,6 +224,7 @@ const Cart = ({ landing }) => {
           acceptPaymentTypes={landing?.acceptPaymentTypes}
           message={getCartSummaryMessage()}
           onClose={() => setIsModalOpen(false)}
+          landing={landing}
         />
       )}
     </div>

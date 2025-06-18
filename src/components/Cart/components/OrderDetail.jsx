@@ -2,7 +2,7 @@
 import { Divider } from "antd";
 import { useManageStore } from "../../../store/useManageStore";
 
-const OrderDetail = ({ note }) => {
+const OrderDetail = ({ landing,note }) => {
   const { items } = useManageStore();
 
   // Total with discounted prices
@@ -32,7 +32,7 @@ const OrderDetail = ({ note }) => {
                 {item.name} × {item.quantity}
               </span>
               <span className="font-medium">
-                Ks {itemTotal.toLocaleString()}
+                {landing?.currency} {itemTotal.toLocaleString()}
               </span>
             </div>
           );
@@ -43,7 +43,7 @@ const OrderDetail = ({ note }) => {
 
       <div className="flex justify-between items-center text-base font-semibold">
         <span>Total:</span>
-        <span>Ks {total.toLocaleString()}</span>
+        <span>{landing?.currency} {total.toLocaleString()}</span>
       </div>
     </div>
   );

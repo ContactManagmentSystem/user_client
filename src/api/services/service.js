@@ -52,14 +52,16 @@ export const postVerifyData = async (path, uniqueCode = "") => {
   }
 };
 
-export const createData = async (path, productData) => {
+export const createData = async (path, payload) => {
   try {
-    const response = await axiosInstance.post(`/${path}`, productData);
-    console.log(response);
-    // console.log(path,productData)
+    const { data, config } =
+      typeof payload === "object" && payload.data
+        ? payload
+        : { data: payload, config: {} };
+    const response = await axiosInstance.post(`/${path}`, data, config);
     return response.data;
   } catch (error) {
-    console.error("Error creating product:", error);
+    console.error(`Error creating data for ${path}:`, error);
     throw error;
   }
 };

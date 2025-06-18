@@ -44,7 +44,7 @@ export const useGetPaymentType = (page = 1, limit = 5, qualityType = "all") => {
 
 export const useCreateOrder = () => {
   return useMutation({
-    mutationFn: (orderData) => createData("orders", orderData),
+    mutationFn: (orderData) => createData("orders", orderData), 
   });
 };
 

@@ -122,20 +122,37 @@ const ConfirmModal = ({ message: note, onClose, acceptPaymentTypes = [] }) => {
       }
 
       setSubmitting(true);
-      const response = await createOrder.mutateAsync(formData);
-      console.log(response)
+
+      const config = {
+        onUploadProgress: (e) => {
+          const percent = Math.round((e.loaded * 100) / e.total);
+          message.open({
+            key: "order-upload",
+            type: "loading",
+            content: `Uploading... ${percent}%`,
+            duration: 0,
+          });
+        },
+      };
+
+      const response = await createOrder.mutateAsync({
+        data: formData,
+        config,
+      });
       const orderId = response?.data?._id;
 
       if (orderId) {
         addOrderHistory(orderId);
       }
 
+      message.destroy("order-upload");
       message.success("Order placed successfully.");
       clearCart();
       resetPlaceOrder();
       onClose(orderId);
     } catch (err) {
       console.error(err);
+      message.destroy("order-upload");
       message.error("Order failed.");
     } finally {
       setSubmitting(false);
@@ -293,6 +310,7 @@ const ConfirmModal = ({ message: note, onClose, acceptPaymentTypes = [] }) => {
                           </div>
                         )}
                       </Upload>
+
                       {fileList.length > 0 && (
                         <div className="relative flex flex-col items-center mt-4">
                           <img

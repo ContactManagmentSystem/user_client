@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // src/components/History/index.jsx
 import { Timeline } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
@@ -8,7 +9,7 @@ import { useManageStore } from "../../store/useManageStore";
 import { useQueries } from "@tanstack/react-query";
 import { getOrderById } from "../../api/services/service";
 
-const History = () => {
+const History = ({ landing }) => {
   const { orderHistory } = useManageStore((state) => ({
     orderHistory: state.orderHistory,
   }));
@@ -22,24 +23,26 @@ const History = () => {
   });
 
   const isLoading = orderQueries.some((q) => q.isLoading);
-  const hasError = orderQueries.find((q) => q.error);
-
+  const hasCriticalError = orderQueries.every((q) => q.isError);
   const mappedOrders = orderQueries.map((q, index) => ({
     id: orderHistory[index],
-    data: q.data,
+    data: q.data?.data || null,
+    error: q.error,
   }));
 
   if (isLoading) return <Loading />;
 
-  if (hasError) {
+  if (hasCriticalError) {
     return (
-      <div className="text-red-600 text-center">
-        Error: {hasError.error.message}
+      <div className="text-red-600 text-center mt-10">
+        Failed to load order history. Please try again later.
       </div>
     );
   }
 
-  if (mappedOrders?.length === 0) {
+  const filteredOrders = mappedOrders.filter((o) => o.data);
+
+  if (filteredOrders.length === 0) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center p-4 text-center">
         <img
@@ -54,10 +57,10 @@ const History = () => {
     );
   }
 
-  const timelineItems = mappedOrders.map((order) => {
-    const orderData = order.data?.data;
-    const totalItems = orderData?.products.length || 0;
-    const totalPrice = orderData?.products.reduce((sum, p) => {
+  const timelineItems = filteredOrders.map((order) => {
+    const orderData = order.data;
+    const totalItems = orderData?.products?.length || 0;
+    const totalPrice = orderData?.products?.reduce((sum, p) => {
       const unitPrice = p.productId?.price || 0;
       return sum + unitPrice * (p.quantity || 1);
     }, 0);
@@ -78,9 +81,12 @@ const History = () => {
       children: (
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-3">
           <div className="space-y-1">
-            <p className="text-base font-semibold text-gray-800">
-              Order ID: <span className="text-blue-600">{order.id}</span>
-            </p>
+            {orderData?.orderCode && (
+              <p className="text-base font-semibold text-gray-800">
+                Order ID:{" "}
+                <span className="text-blue-600">{orderData.orderCode}</span>
+              </p>
+            )}
             <p className="text-sm text-gray-600">
               Address:{" "}
               <span className="text-gray-800">{orderData?.address}</span>
@@ -89,12 +95,14 @@ const History = () => {
               Primary Phone:{" "}
               <span className="text-gray-800">{orderData?.phonePrimary}</span>
             </p>
-            <p className="text-sm text-gray-600">
-              Secondary Phone:{" "}
-              <span className="text-gray-800">
-                {orderData?.phoneSecondary || "-"}
-              </span>
-            </p>
+            {orderData?.phoneSecondary && (
+              <p className="text-sm text-gray-600">
+                Secondary Phone:{" "}
+                <span className="text-gray-800">
+                  {orderData.phoneSecondary}
+                </span>
+              </p>
+            )}
             <p className="text-sm text-gray-600">
               Payment Type:{" "}
               <span className="text-gray-800">{orderData?.paymentType}</span>
@@ -105,6 +113,14 @@ const History = () => {
                 {orderData?.progress}
               </span>
             </p>
+            {orderData?.reason && (
+              <p className="text-sm text-gray-600">
+                Reason:{" "}
+                <span className="text-red-600 font-medium">
+                  {orderData.reason}
+                </span>
+              </p>
+            )}
             <p className="text-sm text-gray-600">
               Total Items:{" "}
               <span className="font-medium text-gray-700">{totalItems}</span>
@@ -122,7 +138,7 @@ const History = () => {
             <p className="text-sm text-gray-600">
               Total Amount:{" "}
               <span className="font-medium text-green-600">
-                {totalPrice.toLocaleString()} Ks
+                {totalPrice.toLocaleString()} {landing?.currency}
               </span>
             </p>
           </div>

@@ -129,7 +129,7 @@ const ConfirmModal = ({ message: note, onClose, acceptPaymentTypes = [] }) => {
           message.open({
             key: "order-upload",
             type: "loading",
-            content: `Uploading... ${percent}%`,
+            content: `Your file size is too large please wait... ${percent}%`,
             duration: 0,
           });
         },
@@ -166,7 +166,7 @@ const ConfirmModal = ({ message: note, onClose, acceptPaymentTypes = [] }) => {
   const showPrepaid = acceptPaymentTypes.includes("Prepaid");
 
   return (
-    <div className="fixed inset-0 z-50 backdrop-blur-md bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed -top-10 left-0 right-0 bottom-0 z-50 backdrop-blur-md bg-black/50 flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden">
         <div className="px-6 py-4 border-b">
           <Title level={4} className="m-0">

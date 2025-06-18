@@ -1,29 +1,49 @@
-import { useState, lazy, Suspense } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessengerLogo, X } from "phosphor-react";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Telegram,
+  WhatsApp,
+  YouTube,
+  LinkedIn,
+  Email,
+  Phone,
+  Link as LinkIcon,
+} from "@mui/icons-material";
+
 import useLandingStore from "../../store/LandingStore";
 import { useGetLanding } from "../../api/hooks/useQuery";
 import { redirectToContact } from "../../lib/contact";
 
 const itemVariants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-    scale: 0.9,
-    transition: { duration: 0.2 },
-  },
+  hidden: { opacity: 0, y: 20, scale: 0.9, transition: { duration: 0.2 } },
   visible: (i) => ({
     opacity: 1,
     y: 0,
     scale: 1,
     transition: { delay: i * 0.05, duration: 0.3 },
   }),
-  exit: {
-    opacity: 0,
-    y: 20,
-    scale: 0.9,
-    transition: { duration: 0.2 },
-  },
+  exit: { opacity: 0, y: 20, scale: 0.9, transition: { duration: 0.2 } },
+};
+
+// Icon resolver using string inclusion
+const resolveIcon = (iconName) => {
+  const name = iconName?.toLowerCase() || "";
+
+  if (name.includes("facebook")) return Facebook;
+  if (name.includes("instagram")) return Instagram;
+  if (name.includes("twitter")) return Twitter;
+  if (name.includes("telegram")) return Telegram;
+  if (name.includes("whatsapp")) return WhatsApp;
+  if (name.includes("youtube")) return YouTube;
+  if (name.includes("linkedin")) return LinkedIn;
+  if (name.includes("email") || name.includes("mail")) return Email;
+  if (name.includes("phone") || name.includes("tel")) return Phone;
+
+  return LinkIcon;
 };
 
 const ContactToggle = () => {
@@ -46,12 +66,7 @@ const ContactToggle = () => {
             className="flex flex-col items-end mb-3 origin-bottom"
           >
             {socialLinks.map(({ name, link, icon }, i) => {
-              const iconName = icon?.replace(/Icon$/, "");
-              const DynamicIcon = lazy(() =>
-                import("@mui/icons-material").then((mod) => ({
-                  default: mod[iconName] || mod["Link"],
-                }))
-              );
+              const IconComponent = resolveIcon(icon);
 
               return (
                 <motion.div
@@ -61,7 +76,7 @@ const ContactToggle = () => {
                   animate="visible"
                   exit="exit"
                   variants={itemVariants}
-                  onClick={() => redirectToContact(link)} 
+                  onClick={() => redirectToContact(link)}
                   className="flex items-center gap-3 mb-3 overflow-hidden cursor-pointer"
                 >
                   <div
@@ -78,12 +93,10 @@ const ContactToggle = () => {
                     className="w-12 h-12 rounded-full shadow-md flex items-center justify-center"
                     style={{ backgroundColor: primaryColor }}
                   >
-                    <Suspense fallback={<div className="text-white">...</div>}>
-                      <DynamicIcon
-                        style={{ color: "#fff" }}
-                        fontSize="medium"
-                      />
-                    </Suspense>
+                    <IconComponent
+                      style={{ color: "#fff" }}
+                      fontSize="medium"
+                    />
                   </div>
                 </motion.div>
               );

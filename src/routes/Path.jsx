@@ -19,7 +19,7 @@ const PublicRoute = ({ element }) => element;
 const Path = () => {
   const { data: landing, isLoading } = useGetLanding();
   const setLandingData = useLandingStore((state) => state.setLandingData);
-
+  
   useEffect(() => {
     if (landing?.data) {
       setLandingData(landing?.data);

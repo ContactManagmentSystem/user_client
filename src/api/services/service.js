@@ -32,7 +32,7 @@ export const getData = async (path, page = 1, limit = 5, qualityType = "") => {
       }
     );
     // console.log("Params",path,page,limit,qualityType)
-    console.log("response", response);
+    // console.log("response", response);
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);

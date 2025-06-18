@@ -123,6 +123,7 @@ const ConfirmModal = ({ message: note, onClose, acceptPaymentTypes = [] }) => {
 
       setSubmitting(true);
       const response = await createOrder.mutateAsync(formData);
+      console.log(response)
       const orderId = response?.data?._id;
 
       if (orderId) {

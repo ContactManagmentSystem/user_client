@@ -1,48 +1,9 @@
-/* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Phone,
-  TelegramLogo,
-  EnvelopeSimple,
-  ChatCircleDots,
-  MessengerLogo,
-  X,
-} from "phosphor-react";
+import { MessengerLogo, X } from "phosphor-react";
 import useLandingStore from "../../store/LandingStore";
-
-const contacts = [
-  {
-    label: "Phone",
-    icon: Phone,
-    value: "+1234567890",
-    href: "tel:+1234567890",
-  },
-  {
-    label: "Telegram",
-    icon: TelegramLogo,
-    value: "@telegramuser",
-    href: "https://t.me/telegramuser",
-  },
-  {
-    label: "Email",
-    icon: EnvelopeSimple,
-    value: "email@example.com",
-    href: "mailto:email@example.com",
-  },
-  {
-    label: "Viber",
-    icon: ChatCircleDots,
-    value: "+1234567890",
-    href: "viber://chat?number=%2B1234567890",
-  },
-  {
-    label: "Messenger",
-    icon: MessengerLogo,
-    value: "messengerUser",
-    href: "https://m.me/messengerUser",
-  },
-];
+import { useGetLanding } from "../../api/hooks/useQuery";
+import { redirectToContact } from "../../lib/contact";
 
 const itemVariants = {
   hidden: {
@@ -66,9 +27,11 @@ const itemVariants = {
 };
 
 const ContactToggle = () => {
+  const { data: landing } = useGetLanding();
   const [isOpen, setIsOpen] = useState(false);
   const landingData = useLandingStore((state) => state.landingData);
   const primaryColor = landingData?.colourCode || "#3b82f6";
+  const socialLinks = landing?.data?.socialLinks || [];
 
   return (
     <div className="fixed right-5 bottom-5 z-50 flex flex-col items-end select-none">
@@ -82,37 +45,49 @@ const ContactToggle = () => {
             transition={{ duration: 0.25 }}
             className="flex flex-col items-end mb-3 origin-bottom"
           >
-            {contacts.map(({ label, icon: IconComp, href }, i) => (
-              <motion.a
-                key={label}
-                custom={i}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                variants={itemVariants}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 mb-3 overflow-hidden"
-              >
-                <div
-                  className="shadow-md rounded-full px-4 py-2 w-40 text-sm font-medium truncate transition cursor-pointer"
-                  style={{
-                    backgroundColor: "#f8fafc",
-                    color: primaryColor,
-                    border: `1px solid ${primaryColor}`,
-                  }}
+            {socialLinks.map(({ name, link, icon }, i) => {
+              const iconName = icon?.replace(/Icon$/, "");
+              const DynamicIcon = lazy(() =>
+                import("@mui/icons-material").then((mod) => ({
+                  default: mod[iconName] || mod["Link"],
+                }))
+              );
+
+              return (
+                <motion.div
+                  key={name + i}
+                  custom={i}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={itemVariants}
+                  onClick={() => redirectToContact(link)} 
+                  className="flex items-center gap-3 mb-3 overflow-hidden cursor-pointer"
                 >
-                  {label}
-                </div>
-                <div
-                  className="w-12 h-12 rounded-full shadow-md flex items-center justify-center"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  <IconComp size={28} weight="fill" className="text-white" />
-                </div>
-              </motion.a>
-            ))}
+                  <div
+                    className="shadow-md rounded-full px-4 py-2 w-40 text-sm font-medium truncate transition"
+                    style={{
+                      backgroundColor: "#f8fafc",
+                      color: primaryColor,
+                      border: `1px solid ${primaryColor}`,
+                    }}
+                  >
+                    {name}
+                  </div>
+                  <div
+                    className="w-12 h-12 rounded-full shadow-md flex items-center justify-center"
+                    style={{ backgroundColor: primaryColor }}
+                  >
+                    <Suspense fallback={<div className="text-white">...</div>}>
+                      <DynamicIcon
+                        style={{ color: "#fff" }}
+                        fontSize="medium"
+                      />
+                    </Suspense>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>

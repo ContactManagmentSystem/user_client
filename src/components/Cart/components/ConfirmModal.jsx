@@ -17,11 +17,17 @@ import { CopyOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCreateOrder, useGetPaymentType } from "../../../api/hooks/useQuery";
 import { useManageStore } from "../../../store/useManageStore";
 import OrderDetail from "./OrderDetail";
+import imageCompression from "browser-image-compression";
 
 const { Option } = AntSelect;
 const { Title } = Typography;
 
-const ConfirmModal = ({ landing, message: note, onClose, acceptPaymentTypes = [] }) => {
+const ConfirmModal = ({
+  landing,
+  message: note,
+  onClose,
+  acceptPaymentTypes = [],
+}) => {
   const [form] = Form.useForm();
   const createOrder = useCreateOrder();
   const { data: payments = [] } = useGetPaymentType();
@@ -33,16 +39,43 @@ const ConfirmModal = ({ landing, message: note, onClose, acceptPaymentTypes = []
   const [fileList, setFileList] = useState([]);
   const fileRef = useRef(null);
 
-  const handleUploadChange = ({ fileList }) => {
-    const latest = fileList.slice(-1).map((file) => {
-      if (!file.url && !file.preview) {
-        file.preview = URL.createObjectURL(file.originFileObj);
-      }
-      return file;
-    });
-    setFileList(latest);
-    fileRef.current = latest[0]?.originFileObj || null;
-  };
+const handleUploadChange = async ({ fileList }) => {
+  const latestFile = fileList.slice(-1)[0];
+
+  if (!latestFile?.originFileObj) return;
+
+  const file = latestFile.originFileObj;
+
+  let compressedFile = file;
+
+  if (file.size > 500 * 1024) {
+    try {
+      const options = {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+      };
+      compressedFile = await imageCompression(file, options);
+      message.info("Image compressed due to large size.");
+    } catch (error) {
+      console.error("Compression error:", error);
+      message.warning("Failed to compress image.");
+    }
+  }
+
+  compressedFile.preview = URL.createObjectURL(compressedFile);
+
+  setFileList([
+    {
+      ...latestFile,
+      originFileObj: compressedFile,
+      preview: compressedFile.preview,
+      name: compressedFile.name,
+    },
+  ]);
+
+  fileRef.current = compressedFile;
+};
 
   const handleRemove = () => {
     setFileList([]);

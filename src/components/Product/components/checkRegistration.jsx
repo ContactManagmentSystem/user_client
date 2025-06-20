@@ -11,7 +11,7 @@ const CheckRegistration = ({ isDrawerOpen, toggleDrawer }) => {
   const [submittedCode, setSubmittedCode] = useState("");
   const { mutate, isLoading, isError, error, data } = usePostVerifyCode();
 
-  console.log(data);
+  // console.log(data);
 
   const handleInputChange = (e) => {
     setCode(e.target.value);

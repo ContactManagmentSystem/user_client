@@ -16,7 +16,7 @@ export const signupUser = async (userData) => {
     // console.log(response)
     return response.data;
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     console.error("Error signing up:", error);
     throw error;
   }

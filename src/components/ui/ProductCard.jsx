@@ -27,7 +27,7 @@ const ProductCard = ({ landing, product }) => {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [delayMs, setDelayMs] = useState(getRandomDelay());
-console.log(landing)
+// console.log(landing)
   const { addItem, removeItem, items } = useManageStore((state) => ({
     addItem: state.addItem,
     removeItem: state.removeItem,

@@ -16,6 +16,7 @@ import {
 } from "phosphor-react";
 import ConfirmModal from "./components/ConfirmModal";
 import { redirectToContact } from "../../lib/contact";
+import { Divider } from "antd";
 
 const formatPrice = (num) => new Intl.NumberFormat("en-US").format(num);
 
@@ -47,18 +48,24 @@ const Cart = ({ landing }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const primaryColor = landing?.colourCode || "#3b82f6";
 
+  // Cart summary message that includes item details
   const getCartSummaryMessage = () => {
     if (!items.length) return "My cart is empty.";
 
     const lines = items.map((item, index) => {
-      const sellingPrice = item.discountPrice || item.price;
+      const discount = item.discountPrice || 0;
+      const sellingPrice = item.price - discount; // Use price minus discount
+      const itemTotal = sellingPrice * item.quantity;
       return `${index + 1}. ${item.name} — Qty: ${
         item.quantity
-      } x ${sellingPrice} ${landing?.currency} = ${sellingPrice * item.quantity} ${landing?.currency}`;
+      } x ${sellingPrice} ${landing?.currency} = ${itemTotal} ${
+        landing?.currency
+      }`;
     });
 
     const total = items.reduce((acc, item) => {
-      const sellingPrice = item.discountPrice || item.price;
+      const discount = item.discountPrice || 0;
+      const sellingPrice = item.price - discount;
       return acc + item.quantity * sellingPrice;
     }, 0);
 
@@ -68,8 +75,10 @@ const Cart = ({ landing }) => {
 
   const encodedMsg = encodeURIComponent(getCartSummaryMessage());
 
+  // Calculate the total amount based on selling price
   const totalAmount = items.reduce((sum, item) => {
-    const sellingPrice = item.discountPrice || item.price;
+    const discount = item.discountPrice || 0;
+    const sellingPrice = item.price - discount; // Use price minus discount
     return sum + item.quantity * sellingPrice;
   }, 0);
 
@@ -89,7 +98,8 @@ const Cart = ({ landing }) => {
           {/* Item List */}
           <div className="space-y-4">
             {items.map((item) => {
-              const sellingPrice = item.discountPrice || item.price;
+              const discount = item.discountPrice || 0;
+              const sellingPrice = item.price - discount; // Use price minus discount
               const itemTotal = sellingPrice * item.quantity;
 
               return (

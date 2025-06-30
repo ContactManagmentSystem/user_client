@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessengerLogo, X } from "phosphor-react";
 import {
-  FacebookFilled,
-  TwitterSquareFilled,
-  InstagramFilled,
-  LinkedinFilled,
-  WhatsAppOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  SendOutlined,
-  MessageOutlined,
-  LineOutlined,
-} from "@ant-design/icons";
+  MessengerLogo,
+  X,
+  TelegramLogo,
+  FacebookLogo,
+  TwitterLogo,
+  InstagramLogo,
+  LinkedinLogo,
+  WhatsappLogo,
+  Envelope,
+  Phone,
+  Chat,
+  Link,
+} from "phosphor-react";
 
 import useLandingStore from "../../store/LandingStore";
 import { useGetLanding } from "../../api/hooks/useQuery";
@@ -31,19 +32,21 @@ const itemVariants = {
 
 const resolveIcon = (iconName) => {
   const name = iconName?.toLowerCase() || "";
+  console.log(name);
 
-  if (name.includes("facebook")) return FacebookFilled;
-  if (name.includes("instagram")) return InstagramFilled;
-  if (name.includes("twitter")) return TwitterSquareFilled;
-  if (name.includes("linkedin")) return LinkedinFilled;
-  if (name.includes("whatsapp")) return WhatsAppOutlined;
-  if (name.includes("email") || name.includes("mail")) return MailOutlined;
-  if (name.includes("phone") || name.includes("tel")) return PhoneOutlined;
-  if (name.includes("message") || name.includes("chat")) return MessageOutlined;
-  if (name.includes("line")) return LineOutlined;
-  if (name.includes("send")) return SendOutlined;
+  if (name.includes("facebook")) return FacebookLogo;
+  if (name.includes("instagram")) return InstagramLogo;
+  if (name.includes("twitter")) return TwitterLogo;
+  if (name.includes("linkedin")) return LinkedinLogo;
+  if (name.includes("whatsapp")) return WhatsappLogo;
+  if (name.includes("email")) return Envelope;
+  if (name.includes("phone")) return Phone;
+  if (name.includes("line")) return Chat;
+  if (name.includes("send")) return Link;
+  if (name.includes("messenger")) return MessengerLogo; // Added Messenger
+  if (name.includes("telegram")) return TelegramLogo; // Added Telegram
 
-  return null;
+  return TelegramLogo;
 };
 
 const ContactToggle = () => {
@@ -95,7 +98,7 @@ const ContactToggle = () => {
                   >
                     <IconComponent
                       style={{ color: "#fff" }}
-                      fontSize="medium"
+                      size={24} // Adjusted size for consistency
                     />
                   </div>
                 </motion.div>

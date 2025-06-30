@@ -2,17 +2,17 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessengerLogo, X } from "phosphor-react";
 import {
-  Facebook,
-  Instagram,
-  Twitter,
-  Telegram,
-  WhatsApp,
-  YouTube,
-  LinkedIn,
-  Email,
-  Phone,
-  Link as LinkIcon,
-} from "@mui/icons-material";
+  FacebookFilled,
+  TwitterSquareFilled,
+  InstagramFilled,
+  LinkedinFilled,
+  WhatsAppOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  SendOutlined,
+  MessageOutlined,
+  LineOutlined,
+} from "@ant-design/icons";
 
 import useLandingStore from "../../store/LandingStore";
 import { useGetLanding } from "../../api/hooks/useQuery";
@@ -29,21 +29,21 @@ const itemVariants = {
   exit: { opacity: 0, y: 20, scale: 0.9, transition: { duration: 0.2 } },
 };
 
-// Icon resolver using string inclusion
 const resolveIcon = (iconName) => {
   const name = iconName?.toLowerCase() || "";
 
-  if (name.includes("facebook")) return Facebook;
-  if (name.includes("instagram")) return Instagram;
-  if (name.includes("twitter")) return Twitter;
-  if (name.includes("telegram")) return Telegram;
-  if (name.includes("whatsapp")) return WhatsApp;
-  if (name.includes("youtube")) return YouTube;
-  if (name.includes("linkedin")) return LinkedIn;
-  if (name.includes("email") || name.includes("mail")) return Email;
-  if (name.includes("phone") || name.includes("tel")) return Phone;
+  if (name.includes("facebook")) return FacebookFilled;
+  if (name.includes("instagram")) return InstagramFilled;
+  if (name.includes("twitter")) return TwitterSquareFilled;
+  if (name.includes("linkedin")) return LinkedinFilled;
+  if (name.includes("whatsapp")) return WhatsAppOutlined;
+  if (name.includes("email") || name.includes("mail")) return MailOutlined;
+  if (name.includes("phone") || name.includes("tel")) return PhoneOutlined;
+  if (name.includes("message") || name.includes("chat")) return MessageOutlined;
+  if (name.includes("line")) return LineOutlined;
+  if (name.includes("send")) return SendOutlined;
 
-  return LinkIcon;
+  return null;
 };
 
 const ContactToggle = () => {

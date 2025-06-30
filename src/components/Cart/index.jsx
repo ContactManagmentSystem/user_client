@@ -16,7 +16,6 @@ import {
 } from "phosphor-react";
 import ConfirmModal from "./components/ConfirmModal";
 import { redirectToContact } from "../../lib/contact";
-import { Divider } from "antd";
 
 const formatPrice = (num) => new Intl.NumberFormat("en-US").format(num);
 

@@ -46,36 +46,146 @@ const handleUploadChange = async ({ fileList }) => {
 
   const file = latestFile.originFileObj;
 
-  let compressedFile = file;
+  // Check if the file is already an image (e.g., PNG, JPEG, GIF, etc.)
+  const imageExtensions = ["image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp", "image/tiff"];
+  const nonImageExtensions = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
 
-  if (file.size > 500 * 1024) {
-    try {
-      const options = {
-        maxSizeMB: 0.5,
-        maxWidthOrHeight: 1280,
-        useWebWorker: true,
-      };
-      compressedFile = await imageCompression(file, options);
-      message.info("Image compressed due to large size.");
-    } catch (error) {
-      console.error("Compression error:", error);
-      message.warning("Failed to compress image.");
-    }
+  let convertedFile = file;
+
+  // Handle non-image files (e.g., PDF, DOCX, etc.) - You can convert PDF to image using a service/API
+  if (nonImageExtensions.includes(file.type)) {
+    message.error("Non-image files cannot be converted directly. Please use a specialized API to convert PDF/DOCX to PNG/JPEG.");
+    return;
   }
 
-  compressedFile.preview = URL.createObjectURL(compressedFile);
+  // Handle SVG files (convert to PNG/JPEG)
+  if (file.type === "image/svg+xml") {
+    message.info("SVG file detected. Converting to PNG/JPEG...");
+    const reader = new FileReader();
 
-  setFileList([
-    {
-      ...latestFile,
-      originFileObj: compressedFile,
-      preview: compressedFile.preview,
-      name: compressedFile.name,
-    },
-  ]);
+    reader.onload = async function (event) {
+      const svgData = event.target.result;
+      const img = new Image();
+      const svgBlob = new Blob([svgData], { type: "image/svg+xml" });
+      const svgUrl = URL.createObjectURL(svgBlob);
+      img.src = svgUrl;
 
-  fileRef.current = compressedFile;
+      img.onload = async () => {
+        // Create canvas to convert the SVG to a raster image (PNG/JPEG)
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas size based on the SVG's dimensions
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        // Draw the SVG onto the canvas
+        ctx.drawImage(img, 0, 0);
+
+        // Convert to PNG (or JPEG)
+        const convertedDataUrl = canvas.toDataURL("image/png");  // change to "image/jpeg" for JPEG conversion
+        const response = await fetch(convertedDataUrl);
+        const blob = await response.blob();
+
+        convertedFile = new File([blob], "converted-image.png", { type: "image/png" });
+
+        // Check if file size is too large and compress if necessary
+        if (convertedFile.size > 500 * 1024) {
+          try {
+            const options = {
+              maxSizeMB: 0.5, // Max size of 0.5MB
+              maxWidthOrHeight: 1280, // Max width or height
+              useWebWorker: true,
+            };
+            const compressedFile = await imageCompression(convertedFile, options);
+            message.info("Converted image compressed due to large size.");
+            convertedFile = compressedFile;
+          } catch (error) {
+            console.error("Compression error:", error);
+            message.warning("Failed to compress converted image.");
+          }
+        }
+
+        // Update the preview and file list
+        convertedFile.preview = URL.createObjectURL(convertedFile);
+        setFileList([
+          {
+            ...latestFile,
+            originFileObj: convertedFile,
+            preview: convertedFile.preview,
+            name: convertedFile.name,
+          },
+        ]);
+
+        fileRef.current = convertedFile;
+        message.success("SVG file successfully converted and compressed.");
+      };
+    };
+
+    reader.readAsText(file);
+  }
+
+  // Handle image conversion (BMP, WebP, TIFF, etc.) to PNG/JPEG
+  else if (imageExtensions.includes(file.type)) {
+    message.info("Converting image file to PNG/JPEG...");
+    let img = new Image();
+    const fileURL = URL.createObjectURL(file);
+    img.src = fileURL;
+
+    img.onload = async () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // Set canvas size based on image dimensions
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      // Draw image onto canvas
+      ctx.drawImage(img, 0, 0);
+
+      // Convert to PNG (or change to "image/jpeg" for JPEG)
+      const convertedDataUrl = canvas.toDataURL("image/png");  // change to "image/jpeg" for JPEG
+      const response = await fetch(convertedDataUrl);
+      const blob = await response.blob();
+
+      convertedFile = new File([blob], "converted-image.png", { type: "image/png" });
+
+      // Compress the converted image if it's over 500KB
+      if (convertedFile.size > 500 * 1024) {
+        try {
+          const options = {
+            maxSizeMB: 0.5, // Max size of 0.5MB
+            maxWidthOrHeight: 1280, // Max width or height
+            useWebWorker: true,
+          };
+          const compressedFile = await imageCompression(convertedFile, options);
+          message.info("Converted image compressed due to large size.");
+          convertedFile = compressedFile;
+        } catch (error) {
+          console.error("Compression error:", error);
+          message.warning("Failed to compress converted image.");
+        }
+      }
+
+      // Update preview and file list
+      convertedFile.preview = URL.createObjectURL(convertedFile);
+      setFileList([
+        {
+          ...latestFile,
+          originFileObj: convertedFile,
+          preview: convertedFile.preview,
+          name: convertedFile.name,
+        },
+      ]);
+
+      fileRef.current = convertedFile;
+      message.success("Image file successfully converted and compressed.");
+    };
+  } else {
+    message.error("Unsupported file type. Only images (JPG, PNG, SVG) and non-image files (PDF, DOCX) are supported.");
+  }
 };
+
 
   const handleRemove = () => {
     setFileList([]);

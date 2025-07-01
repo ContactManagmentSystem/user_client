@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MessengerLogo,
-  X,
-  TelegramLogo,
   FacebookLogo,
   TwitterLogo,
   InstagramLogo,
@@ -11,9 +8,14 @@ import {
   WhatsappLogo,
   Envelope,
   Phone,
-  Chat,
+  TelegramLogo,
+  MessengerLogo,
+  YoutubeLogo,
   Link,
+  X,
 } from "phosphor-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLine, faViber } from "@fortawesome/free-brands-svg-icons"; // Correct import
 
 import useLandingStore from "../../store/LandingStore";
 import { useGetLanding } from "../../api/hooks/useQuery";
@@ -30,23 +32,25 @@ const itemVariants = {
   exit: { opacity: 0, y: 20, scale: 0.9, transition: { duration: 0.2 } },
 };
 
+// Resolve icon based on the name of the platform
 const resolveIcon = (iconName) => {
   const name = iconName?.toLowerCase() || "";
-  console.log(name);
 
-  if (name.includes("facebook")) return FacebookLogo;
-  if (name.includes("instagram")) return InstagramLogo;
-  if (name.includes("twitter")) return TwitterLogo;
-  if (name.includes("linkedin")) return LinkedinLogo;
-  if (name.includes("whatsapp")) return WhatsappLogo;
-  if (name.includes("email")) return Envelope;
-  if (name.includes("phone")) return Phone;
-  if (name.includes("line")) return Chat;
-  if (name.includes("send")) return Link;
-  if (name.includes("messenger")) return MessengerLogo; // Added Messenger
-  if (name.includes("telegram")) return TelegramLogo; // Added Telegram
+  if (name.includes("facebook")) return { type: 'phosphor', component: FacebookLogo };
+  if (name.includes("instagram")) return { type: 'phosphor', component: InstagramLogo };
+  if (name.includes("twitter")) return { type: 'phosphor', component: TwitterLogo };
+  if (name.includes("linkedin")) return { type: 'phosphor', component: LinkedinLogo };
+  if (name.includes("whatsapp")) return { type: 'phosphor', component: WhatsappLogo };
+  if (name.includes("email")) return { type: 'phosphor', component: Envelope };
+  if (name.includes("phone")) return { type: 'phosphor', component: Phone };
+  if (name.includes("line")) return { type: 'fontawesome', component: faLine };
+  if (name.includes("send")) return { type: 'phosphor', component: Link };
+  if (name.includes("messenger")) return { type: 'phosphor', component: MessengerLogo };
+  if (name.includes("telegram")) return { type: 'phosphor', component: TelegramLogo };
+  if (name.includes("youtube")) return { type: 'phosphor', component: YoutubeLogo };
+  if (name.includes("viber")) return { type: 'fontawesome', component: faViber };
 
-  return TelegramLogo;
+  return { type: 'phosphor', component: TelegramLogo }; // Default fallback to Telegram logo
 };
 
 const ContactToggle = () => {
@@ -69,7 +73,7 @@ const ContactToggle = () => {
             className="flex flex-col items-end mb-3 origin-bottom"
           >
             {socialLinks.map(({ name, link, icon }, i) => {
-              const IconComponent = resolveIcon(icon);
+              const { type, component: IconComponent } = resolveIcon(icon);
 
               return (
                 <motion.div
@@ -96,10 +100,19 @@ const ContactToggle = () => {
                     className="w-12 h-12 rounded-full shadow-md flex items-center justify-center"
                     style={{ backgroundColor: primaryColor }}
                   >
-                    <IconComponent
-                      style={{ color: "#fff" }}
-                      size={24} // Adjusted size for consistency
-                    />
+                    {type === "fontawesome" ? (
+                      // Render FontAwesomeIcon for FontAwesome icons (faLine, faViber)
+                      <FontAwesomeIcon
+                        icon={IconComponent} // Pass the icon object to FontAwesomeIcon component
+                        style={{ color: "#fff", fontSize: "24px" }}
+                      />
+                    ) : (
+                      // Render Phosphor React icons directly
+                      <IconComponent
+                        style={{ color: "#fff" }}
+                        size={24} // Adjusted size for consistency
+                      />
+                    )}
                   </div>
                 </motion.div>
               );

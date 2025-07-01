@@ -118,31 +118,33 @@ const Cart = ({ landing }) => {
                         </span>
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex gap-5">
                       <button
-                        onClick={() => decreaseQuantity(item._id)}
-                        className="w-8 h-8 text-lg bg-gray-200 rounded hover:bg-gray-300"
+                        onClick={() => removeItem(item._id)}
+                        className="text-red-600 hover:text-red-800 transition"
+                        aria-label="Remove item"
                       >
-                        -
+                        <Trash size={20} weight="bold" />
                       </button>
-                      <span className="min-w-[30px] text-center font-medium">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => increaseQuantity(item._id)}
-                        className="w-8 h-8 text-lg bg-gray-200 rounded hover:bg-gray-300"
-                      >
-                        +
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => decreaseQuantity(item._id)}
+                          className="w-8 h-8 text-lg bg-gray-200 rounded hover:bg-gray-300"
+                        >
+                          -
+                        </button>
+                        <span className="min-w-[30px] text-center font-medium">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => increaseQuantity(item._id)}
+                          className="w-8 h-8 text-lg bg-gray-200 rounded hover:bg-gray-300"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => removeItem(item._id)}
-                    className="text-red-600 hover:text-red-800 transition"
-                    aria-label="Remove item"
-                  >
-                    <Trash size={20} weight="bold" />
-                  </button>
                 </div>
               );
             })}

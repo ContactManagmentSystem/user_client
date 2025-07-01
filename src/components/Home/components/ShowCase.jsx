@@ -48,7 +48,7 @@ const ShowCase = ({ landing }) => {
     <div className="flex flex-col gap-5">
       {/* Category Filter */}
       <div
-        className="overflow-x-auto custom-scrollbar py-2"
+        className="overflow-x-auto custom-scrollbar pb-2"
         style={{ "--scrollbar-thumb": primaryColor }}
       >
         <div className="flex gap-4 overflow-x-auto custom-scrollbar">

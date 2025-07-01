@@ -24,7 +24,7 @@ const MenuSection = ({ landing }) => {
   }
   // console.log(landing);
   return (
-    <div className=" flex flex-col gap-5 md:gap-10">
+    <div className=" flex flex-col gap-5 ">
       {/* <motion.div
         className="main-font text-gray-900 text-[28px] sm:text-[40px] md:text-[60px] font-semibold leading-tight md:leading-[1.1] tracking-tight max-w-full md:max-w-[80%] break-words md:text-left"
         initial="hidden"
@@ -32,11 +32,11 @@ const MenuSection = ({ landing }) => {
       >
           {landing.storeName}
       </motion.div> */}
-      <div className='p-2'>
+      <div className='px-2 pt-2'>
         <HeroSlice landing={landing} />
       </div>
 
-      <div className="border-t md:p-10 p-5 border-white/20 pt-4">
+      <div className="border-t md:px-10 px-5 border-white/20">
         <ShowCase landing={landing} />
       </div>
     </div>

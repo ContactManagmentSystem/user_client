@@ -60,7 +60,7 @@ const NavBar = ({ padding = "" }) => {
 
   return (
     <div
-      className={`w-full sticky top-0 z-50 bg-white p-4 flex justify-between items-center shadow-md ${padding}`}
+      className={`w-full sticky top-0 z-50 bg-decoration p-4 flex justify-between items-center shadow-md ${padding}`}
     >
       {/* Logo */}
       <div className="flex items-center gap-3">

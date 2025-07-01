@@ -146,4 +146,9 @@
   border-radius: 10px;
 }
 
-
+.bg-decoration{
+  background: rgba(229,229,229,0.75);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.375);
+}
